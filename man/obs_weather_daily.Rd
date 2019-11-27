@@ -42,7 +42,7 @@ last 744 hours. At least one location parameter (geoid/place/fmisid/wmo/bbox)
 has to be given.
 
 The FMI WFS stored query used by this function is
-\code{fmi::observations::weather::daily::simple}. For more informations, see the
+\verb{fmi::observations::weather::daily::simple}. For more informations, see the
 \href{https://en.ilmatieteenlaitos.fi/open-data-manual-fmi-wfs-services}{FMI documentation page}.
 }
 \note{

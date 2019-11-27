@@ -146,7 +146,7 @@ Looks like there aren't too much data for `rrday`, `snow` or `TG_PT12H_min`.
 Let's have a closer look at the data:
 
 ```{r skim-data, results='asis'}
-kable(skimr::skim(wide_data))
+knitr::kable(skimr::skim(wide_data))
 ```
 
 Seems like the above mentioned variables indeed don't have data between the
