@@ -53,6 +53,7 @@ Collate:
     'aaa.R'
     'api.R'
     'stored_queries.R'
+    'sun_observations.R'
     'utils-pipe.R'
     'utils-wfs.R'
     'weather_observations.R'
