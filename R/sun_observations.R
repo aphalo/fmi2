@@ -1,10 +1,8 @@
 #' @title Sun radiation observations
-#' @description Daily weather observations from weather stations.
+#' @description Sun radiation observations from selected weather stations.
 #'
-#' @details Default set contains daily precipitation rate, mean temperature,
-#' snow depth,
-#' and minimum and maximum temperature. By default, the data is returned from
-#' last 744 hours. At least one location parameter (geoid/place/fmisid/wmo/bbox)
+#' @details Default set contains
+#' At least one location parameter (geoid/place/fmisid/wmo/bbox)
 #' has to be given.
 #'
 #' The FMI WFS stored query used by this function is
@@ -27,23 +25,21 @@
 # @param geoid numeric geoid of the location for which to return data.
 # @param wmo numeric WMO code of the location for which to return data.
 #'
-#' @import dplyr
-#' @importFrom rlang .data
-#' @importFrom checkmate assert check_null
-#' @importFrom lubridate as_date
-#'
 #' @note For a complete description of the accepted arguments, see
 #' `list_parameters("fmi::observations::radiation::daily::simple")`.
 #'
 #' @return sf object in a long (melted) form. Observation variables names are
 #' given in `variable` column. Following variables are returned:
 #'   \describe{
-#'     \item{rrday}{Precipitation amount}
-#'     \item{snow}{Snow depth}
-#'     \item{tday}{Average air temperature}
-#'     \item{tmin}{Minimum air temperature}
-#'     \item{tmax}{Maximum air temperature}
-#'     \item{TG_PT12H_min}{Ground minimum temperature}
+#'     \item{DIFF_1MIN}{Diffuse radiation}
+#'     \item{DIR_1MIN}{Direct radiation}
+#'     \item{GLOB_1MIN}{Global radiation}
+#'     \item{REFL_1MIN}{Reflected radiation}
+#'     \item{LWIN_1MIN}{Long wave solar radiation}
+#'     \item{LWOUT_1MIN}{Long wave outgoing solar radiation}
+#'     \item{NET_1MIN}{Radiation balance}
+#'     \item{SUND_1MIN}{Sunshine duration}
+#'     \item{UVB_U}{Ultraviolet irradiance}
 #'   }
 #'
 #' @export
@@ -51,94 +47,11 @@
 #' @seealso https://en.ilmatieteenlaitos.fi/open-data-manual-fmi-wfs-services,
 #' @seealso \link[fmi2]{list_parameters}
 #'
-obs_sunrad_daily <- function(starttime, endtime, fmisid = NULL, place = NULL) {
-
-  # At least one location argument must be provided
-  if (is.null(fmisid) & is.null(place)) {
-    stop("No location argument provided", call. = FALSE)
-  }
-
-  # start and end time must be Dates or characters coercable to Dates, and must
-  # be in the past
-
-  fmi_obj <- fmi_api(request = "getFeature",
-                     storedquery_id = "fmi::observations::radiation::multipointcoverage",
-                     starttime = starttime, endtime = endtime, fmisid = fmisid,
-                     place = place)
-  sf_obj <- to_sf(fmi_obj)
-  sf_obj <- sf_obj %>%
-    dplyr::select(time = .data$Time, variable = .data$ParameterName,
-                  value = .data$ParameterValue) %>%
-    dplyr::mutate(time = as.Date(.data$time),
-                  variable = as.character(.data$variable),
-                  # Factor needs to be coerced into character first
-                  value = as.numeric(as.character(.data$value))) %>%
-    dplyr::mutate(value = ifelse(is.nan(.data$value), NA, .data$value))
-  return(sf_obj)
+obs_sunrad_minute <- function(starttime, endtime, fmisid = NULL, place = NULL) {
+  fmi_obs_simple("fmi::observations::radiation::simple",
+                 starttime = starttime,
+                 endtime = endtime,
+                 fmisid = fmisid,
+                 place = place)
 }
 
-#' Hourly weather observations from weather stations.
-#'
-#' Default set contains hourly air temperature average, maximum and minimum, air
-#' relative humidity average, wind speed average, minumum (10 minute average)
-#' and maximum (10 minute average), wind direction average, wind gust speed
-#' maximum (3 second average), rain accumulated, rain intensity maximum, air
-#' pressure average and the most significant weather code. By default, the data
-#' is returned from last 24 hours. At least one location parameter
-#' (geoid/place/fmisid/wmo/bbox) has to be given.
-#'
-#' The FMI WFS stored query used by this function is
-#' `fmi::observations::weather::hourly::simple`. For more informations, see
-#' [the FMI documentation page](https://en.ilmatieteenlaitos.fi/open-data-manual-fmi-wfs-services).
-#'
-#' @param starttime character begin of the time interval in ISO-format.
-#' @param endtime character end of time interval in ISO-format.
-# @param timestep numeric the time step of data in minutes.
-# @param parameters character vector of parameters to return (see below).
-# @param crs character coordinate projection to use in results.
-# @param bbox numeric vector (EXAMPLE) bounding box of area for which to return
-#'        data.
-# @param place character location name for which to provide data.
-#' @param fmisid numeric FMI observation station identifier
-#'        (see \link[fmi2]{fmi_stations}.
-# @param	maxlocations numeric maximum amount of locations.
-# @param geoid numeric geoid of the location for which to return data.
-# @param wmo numeric WMO code of the location for which to return data.
-#'
-#' @import dplyr
-#' @importFrom lubridate parse_date_time
-#'
-#' @note For a complete description of the accepted arguments, see
-#' `list_parameters("fmi::observations::weather::hourly::simple")`.
-#'
-#' @return sf object in a long (melted) form. Observation variables names are
-#' given in `variable` column. Following variables are returned:
-#'   \describe{
-#'     \item{rrday}{Precipitation amount}
-#'     \item{snow}{Snow depth}
-#'     \item{tday}{Average air temperature}
-#'     \item{tmin}{Minimum air temperature}
-#'     \item{tmax}{Maximum air temperature}
-#'     \item{TG_PT12H_min}{Ground minimum temperature}
-#'   }
-#'
-#' @export
-#'
-#' @seealso https://en.ilmatieteenlaitos.fi/open-data-manual-fmi-wfs-services,
-#' @seealso \link[fmi2]{list_parameters}
-#'
-obs_sunrad_minute <- function(starttime, endtime, fmisid = NULL) {
-  fmi_obj <- fmi_api(request = "getFeature",
-                     storedquery_id = "fmi::observations::radiation::simple",
-                     starttime = starttime, endtime = endtime, fmisid = fmisid)
-  sf_obj <- to_sf(fmi_obj)
-  sf_obj <- sf_obj %>%
-    dplyr::select(time = .data$Time, variable = .data$ParameterName,
-                  value = .data$ParameterValue) %>%
-    dplyr::mutate(time = lubridate::parse_date_time(.data$time, "Ymd HMS"),
-                  variable = as.character(.data$variable),
-                  # Factor needs to be coerced into character first
-                  value = as.numeric(as.character(.data$value))) %>%
-    dplyr::mutate(value = ifelse(is.nan(.data$value), NA, .data$value))
-  return(sf_obj)
-}

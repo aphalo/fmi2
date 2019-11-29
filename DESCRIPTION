@@ -51,7 +51,9 @@ RoxygenNote: 7.0.1
 Collate: 
     'fmi2-global.R'
     'aaa.R'
+    'any_observations.R'
     'api.R'
+    'fmi2.R'
     'stored_queries.R'
     'sun_observations.R'
     'utils-pipe.R'

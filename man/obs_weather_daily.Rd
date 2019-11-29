@@ -2,9 +2,15 @@
 % Please edit documentation in R/weather_observations.R
 \name{obs_weather_daily}
 \alias{obs_weather_daily}
+\alias{obs_weather_hourly}
+\alias{obs_weather_monthly}
 \title{Weather observations}
 \usage{
 obs_weather_daily(starttime, endtime, fmisid = NULL, place = NULL)
+
+obs_weather_hourly(starttime, endtime, fmisid = NULL, place = NULL)
+
+obs_weather_monthly(starttime, endtime, fmisid = NULL, place = NULL)
 }
 \arguments{
 \item{starttime}{character or Date start of the time interval in ISO-format.

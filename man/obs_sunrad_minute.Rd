@@ -2,48 +2,53 @@
 % Please edit documentation in R/sun_observations.R
 \name{obs_sunrad_minute}
 \alias{obs_sunrad_minute}
-\title{Hourly weather observations from weather stations.}
+\title{Sun radiation observations}
 \usage{
-obs_sunrad_minute(starttime, endtime, fmisid = NULL)
+obs_sunrad_minute(starttime, endtime, fmisid = NULL, place = NULL)
 }
 \arguments{
-\item{starttime}{character begin of the time interval in ISO-format.}
+\item{starttime}{character or Date start of the time interval in ISO-format.
+character will be coerced into a Date object.}
 
-\item{endtime}{character end of time interval in ISO-format.
+\item{endtime}{character or Date end of the time interval in ISO-format.
+character will be coerced into a Date object.
 data.}
 
 \item{fmisid}{numeric FMI observation station identifier
 (see \link[fmi2]{fmi_stations}.}
+
+\item{place}{character location name for which to provide data.}
 }
 \value{
 sf object in a long (melted) form. Observation variables names are
 given in \code{variable} column. Following variables are returned:
 \describe{
-\item{rrday}{Precipitation amount}
-\item{snow}{Snow depth}
-\item{tday}{Average air temperature}
-\item{tmin}{Minimum air temperature}
-\item{tmax}{Maximum air temperature}
-\item{TG_PT12H_min}{Ground minimum temperature}
+\item{DIFF_1MIN}{Diffuse radiation}
+\item{DIR_1MIN}{Direct radiation}
+\item{GLOB_1MIN}{Global radiation}
+\item{REFL_1MIN}{Reflected radiation}
+\item{LWIN_1MIN}{Long wave solar radiation}
+\item{LWOUT_1MIN}{Long wave outgoing solar radiation}
+\item{NET_1MIN}{Radiation balance}
+\item{SUND_1MIN}{Sunshine duration}
+\item{UVB_U}{Ultraviolet irradiance}
 }
 }
 \description{
-Default set contains hourly air temperature average, maximum and minimum, air
-relative humidity average, wind speed average, minumum (10 minute average)
-and maximum (10 minute average), wind direction average, wind gust speed
-maximum (3 second average), rain accumulated, rain intensity maximum, air
-pressure average and the most significant weather code. By default, the data
-is returned from last 24 hours. At least one location parameter
-(geoid/place/fmisid/wmo/bbox) has to be given.
+Sun radiation observations from selected weather stations.
 }
 \details{
+Default set contains
+At least one location parameter (geoid/place/fmisid/wmo/bbox)
+has to be given.
+
 The FMI WFS stored query used by this function is
-\verb{fmi::observations::weather::hourly::simple}. For more informations, see
-\href{https://en.ilmatieteenlaitos.fi/open-data-manual-fmi-wfs-services}{the FMI documentation page}.
+\verb{fmi::observations::radiation::daily::simple}. For more informations, see the
+\href{https://en.ilmatieteenlaitos.fi/open-data-manual-fmi-wfs-services}{FMI documentation page}.
 }
 \note{
 For a complete description of the accepted arguments, see
-\code{list_parameters("fmi::observations::weather::hourly::simple")}.
+\code{list_parameters("fmi::observations::radiation::daily::simple")}.
 }
 \seealso{
 https://en.ilmatieteenlaitos.fi/open-data-manual-fmi-wfs-services,
