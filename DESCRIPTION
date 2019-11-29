@@ -55,7 +55,6 @@ Collate:
     'api.R'
     'fmi2.R'
     'stored_queries.R'
-    'sun_observations.R'
     'utils-pipe.R'
     'utils-wfs.R'
     'weather_observations.R'

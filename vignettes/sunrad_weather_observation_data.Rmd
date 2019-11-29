@@ -356,3 +356,6 @@ stored.query.ids[grepl("::simple", stored.query.ids)]
 list_parameters("fmi::observations::radiation::timevaluepair")
 ```
 
+```{r}
+list_parameters("fmi::observations::weather::cities::simple")
+```
