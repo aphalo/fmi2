@@ -93,7 +93,8 @@ obs_weather_monthly <- function(starttime,
 }
 
 #' @title Soil observations
-#' @description Soil observations from selected weather stations.
+#' @description Soil observations from weather stations (apparently not all of
+#' them).
 #'
 #' @details Default set contains
 #' At least one location parameter (geoid/place/fmisid/wmo/bbox)
@@ -156,7 +157,8 @@ obs_soil_hourly <- function(starttime,
 }
 
 #' @title Sun radiation observations
-#' @description Sun radiation observations from selected weather stations.
+#' @description Sun radiation observations from the stations at Sodankylä,
+#'   Jokioinen, Helsinki, Parainen, Vantaa, Jyväskylä, Sotkamo and Utsjoki.
 #'
 #' @details Default set contains
 #' At least one location parameter (geoid/place/fmisid/wmo/bbox)

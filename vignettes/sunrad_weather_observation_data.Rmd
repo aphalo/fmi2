@@ -176,7 +176,7 @@ meaning that all variable (i.e. parameter) names are  contained in column
 `variable` and corresponding values in `value` column. You can transform the 
 data into a wide format using `tidyr`:
 
-```{r spread-data}
+```{r spread-data-daily}
 wide_data <- tulliniemi_data %>% 
   tidyr::spread(variable, value) %>% 
   # Let's convert the sf object into a regular tibble
@@ -191,7 +191,7 @@ Looks like there aren't many observations in the data for `rrday`, `snow` or `TG
 Let's have a closer look at the data stored in `wide_data`:
 
 ```{r skim-data, results='asis'}
-knitr::kable(skimr::skim(wide_data))
+skimr::skim(wide_data)
 ```
 
 Seems like the above mentioned variables indeed don't have data between the
@@ -219,7 +219,7 @@ all_data <- all_data %>%
                                   ordered = TRUE))
 ```
 
-Let's plot the daily temperature data for the different locations:
+Let's plot the daily temperature data for the different locations as lines.
 
 ```{r plot-data}
 all_data %>% 
@@ -237,6 +237,21 @@ all_data %>%
   xlab("\nDate") + theme_minimal()
 ```
 
+Let's plot the daily temperature data for the different locations as a line for
+mean and a band for the range.
+
+```{r plot-data-band}
+all_data %>% 
+  dplyr::filter(variable %in% c("tday", "tmax", "tmin")) %>% 
+  tidyr::spread(variable, value) %>%
+  ggplot(aes(x = time, y = tday, ymin = tmin, ymax = tmax)) + 
+  geom_ribbon(fill = "grey75") +
+  geom_line() + 
+  facet_wrap(~ location, ncol=1) + 
+  ylab("Temperature, daily (C)\n") +
+  xlab("\nDate") + theme_minimal()
+```
+
 # Getting hourly weather observation data
 
 In addition to daily values, it is also possible to retrieve weather observation
@@ -246,19 +261,47 @@ as compared to the daily data:
 
 ```{r hourly-data}
 # Get the hourly observations for the first day of February 2019 in Hanko Tulliniemi
-tulliniemi_data <- fmi2::obs_weather_hourly(starttime = "2019-02-01",
-                                            endtime = "2019-02-02",
+tulliniemi_data_hour <- fmi2::obs_weather_hourly(starttime = "2019-06-21",
+                                            endtime = "2019-06-22",
                                             fmisid = 100946)
 ```
 
 Again, let's first have a look at what we actually got:
 
-```{r descrive-variables-2}
-fmi2::describe_variables(tulliniemi_data$variable)
+```{r describe-variables-hour}
+fmi2::describe_variables(tulliniemi_data_hour$variable)
 ```
 
+```{r spread-data-hour}
+tulliniemi_data_hour %>% 
+  tidyr::spread(variable, value) %>% 
+  # Let's convert the sf object into a regular tibble
+  sf::st_set_geometry(NULL) %>%
+  tibble::as_tibble()
+```
+
+```{r}
+tulliniemi_data_month <- fmi2::obs_weather_monthly(starttime = "2018-01-01",
+                                                   endtime = "2018-12-31",
+                                                   fmisid = 100946)
+
+```
+
+```{r describe-variables-month}
+fmi2::describe_variables(tulliniemi_data_month$variable)
+```
+
+```{r spread-data-month}
+tulliniemi_data_month %>% 
+  tidyr::spread(variable, value) %>% 
+  # Let's convert the sf object into a regular tibble
+  sf::st_set_geometry(NULL) %>%
+  tibble::as_tibble()
+```
 
 # Getting minute sun radiation observation data
+
+Sun radiation data is available only for a few stattions: 
 
 Now that we know how the id for a specific observation station, we can proceed
 to getting the actual data. `fmi2` provides several functions for retrieving 
@@ -270,8 +313,17 @@ of 2019:
 ```{r getting-sun-data}
 # Use Kumpula station FMISID
 kumpula_sun_data <- obs_sunrad_minute(starttime = "2019-01-01",
-                                     endtime = "2019-01-02",
-                                     fmisid = 101004)
+                                      endtime = "2019-01-02",
+                                      fmisid = 101004)
+```
+
+A place name as a character string is also accepted (not run here).
+
+```{r getting-sun-data-place, eval=FALSE}
+# Use Kumpula station FMISID
+kumpula_sun_data <- obs_sunrad_minute(starttime = "2019-01-01",
+                                      endtime = "2019-01-02",
+                                      place = "Kumpula")
 ```
 
 In total, the function returned `r nrow(tulliniemi_data)` observations. You can also
@@ -290,7 +342,7 @@ weather station. We'll come back to this later. Now we are interested in what
 unique(kumpula_sun_data$variable)
 ```
 
-```{r descrive-variables-sun}
+```{r describe-variables-sun}
 fmi2::describe_variables(kumpula_sun_data$variable)
 ```
 ```{r}
@@ -300,7 +352,6 @@ wide_sun_data <- kumpula_sun_data %>%
   sf::st_set_geometry(NULL) %>%
   tibble::as_tibble()
 
-class(wide_sun_data)
 wide_sun_data
 ```
 
@@ -314,9 +365,20 @@ ggplot(wide_sun_data, aes(time, GLOB_1MIN)) +
   geom_line()
 ```
 
+## Soil temperatures
+
+Haven't found any station returning soil data!! (Not run)
+
+```{r getting-soil-data, eval=FALSE}
+# Use Kumpula station FMISID
+xx_soil_data <- obs_soil_hourly(starttime = "2019-06-01",
+                                endtime = "2019-06-05",
+                                fmisid = 101104)
+```
+
 # Advanced
 
-For finding stored queries available from the server we first need to dowsload 
+For finding stored queries available from the server we first need to download 
 the whole list of stored queries.
 
 ```{r}
@@ -325,37 +387,34 @@ nodes <- api_obj$content
 unlist(purrr::map(nodes, xml2::xml_attrs)) -> stored.query.ids
 ```
 
+Stored queries with ids ending in `::simple` return data in simple feature 
+(`sf`) format, and are likely to be supported `fmi_obs_simple()`. For queries
+returning data in other formats, there is not yet support in this package.
+
+```{r}
+stored.query.ids[grepl("::simple$", stored.query.ids)]
+```
+
 If we are not sure what is the exact id, we can search partial matches. For
-example `"radiation"` is used for sun radiation.
+example `"radiation"` is used for sun radiation in the `"fmi"` queries but
+for other radiation in the `"stuk"` queries.
 
 ```{r}
 stored.query.ids[grepl("radiation", stored.query.ids) & 
-                   grepl("fmi", stored.query.ids)]
+                   grepl("fmi", stored.query.ids) & 
+                   grepl("::simple$", stored.query.ids)]
 ```
 ```{r}
 list_parameters("fmi::observations::radiation::simple")
 ```
 
 ```{r}
-list_parameters("fmi::observations::radiation::timevaluepair")
-```
-```{r}
-list_parameters("fmi::observations::radiation::multipointcoverage")
-```
-
-```{r}
-stored.query.ids[grepl("stuk::", stored.query.ids)]
-```
-
-```{r}
-stored.query.ids[grepl("::simple", stored.query.ids)]
+stored.query.ids[grepl("stuk::", stored.query.ids) & 
+                   grepl("::simple$", stored.query.ids)]
 ```
 
 
-```{r}
-list_parameters("fmi::observations::radiation::timevaluepair")
-```
 
 ```{r}
-list_parameters("fmi::observations::weather::cities::simple")
+list_parameters("fmi::observations::soil::hourly::simple")
 ```

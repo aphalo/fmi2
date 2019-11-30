@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Decsribe FMI observation variable(s). — describe_variables • fmi2</title>
+<title>Describe FMI Variables — describe_variables • fmi2</title>
 
 
 <!-- jquery -->
@@ -35,9 +35,8 @@
 
 
 
-<meta property="og:title" content="Decsribe FMI observation variable(s). — describe_variables" />
-<meta property="og:description" content="FMI provides a machine-reabable (XML) description of different observation
-variables. Use this function to see the specifications of a given variable." />
+<meta property="og:title" content="Describe FMI Variables — describe_variables" />
+<meta property="og:description" content="Describe FMI observation variable(s)." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -70,7 +69,7 @@ variables. Use this function to see the specifications of a given variable." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">fmi2</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0.9001</span>
       </span>
     </div>
 
@@ -92,6 +91,9 @@ variables. Use this function to see the specifications of a given variable." />
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/sunrad_weather_observation_data.html">fmi2: introductionPJA</a>
+    </li>
     <li>
       <a href="../articles/weather_observation_data.html">fmi2: introduction</a>
     </li>
@@ -116,14 +118,13 @@ variables. Use this function to see the specifications of a given variable." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Decsribe FMI observation variable(s).</h1>
+    <h1>Describe FMI Variables</h1>
     
     <div class="hidden name"><code>describe_variables.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>FMI provides a machine-reabable (XML) description of different observation
-variables. Use this function to see the specifications of a given variable.</p>
+    <p>Describe FMI observation variable(s).</p>
     </div>
 
     <pre class="usage"><span class='fu'>describe_variables</span>(<span class='no'>x</span>)</pre>
@@ -149,6 +150,11 @@ variables. Use this function to see the specifications of a given variable.</p>
 
 </dl>
 
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>FMI provides a machine-reabable (XML) description of different
+observation variables. Use this function to see the specifications of a
+given variable.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>  <span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
@@ -160,6 +166,7 @@ variables. Use this function to see the specifications of a given variable.</p>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       <li><a href="#value">Value</a></li>
+      <li><a href="#details">Details</a></li>
       <li><a href="#examples">Examples</a></li>
     </ul>
 
@@ -171,11 +178,11 @@ variables. Use this function to see the specifications of a given variable.</p>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Joona Lehtomaki.</p>
+  <p>Developed by Joona Lehtomaki, Leo Lahti.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
 
       </footer>

@@ -37,7 +37,8 @@ given in \code{variable} column. Following variables are returned:
 }
 }
 \description{
-Sun radiation observations from selected weather stations.
+Sun radiation observations from the stations at Sodankylä,
+Jokioinen, Helsinki, Parainen, Vantaa, Jyväskylä, Sotkamo and Utsjoki.
 }
 \details{
 Default set contains

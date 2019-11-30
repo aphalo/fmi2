@@ -37,7 +37,8 @@ given in \code{variable} column. Following variables are returned:
 }
 }
 \description{
-Soil observations from selected weather stations.
+Soil observations from weather stations (apparently not all of
+them).
 }
 \details{
 Default set contains

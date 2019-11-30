@@ -76,7 +76,7 @@ unique(tulliniemi_data$variable)
 ## ----describe-variables-------------------------------------------------------
 fmi2::describe_variables(tulliniemi_data$variable)
 
-## ----spread-data--------------------------------------------------------------
+## ----spread-data-daily--------------------------------------------------------
 wide_data <- tulliniemi_data %>% 
   tidyr::spread(variable, value) %>% 
   # Let's convert the sf object into a regular tibble
@@ -87,7 +87,7 @@ class(wide_data)
 wide_data
 
 ## ----skim-data, results='asis'------------------------------------------------
-knitr::kable(skimr::skim(wide_data))
+skimr::skim(wide_data)
 
 ## ----multiple stations, warning=FALSE-----------------------------------------
 oulu_data <- obs_weather_daily(starttime = "2019-01-01",
@@ -123,24 +123,113 @@ all_data %>%
   ylab("Temperature, daily (C)\n") +
   xlab("\nDate") + theme_minimal()
 
+## ----plot-data-band-----------------------------------------------------------
+all_data %>% 
+  dplyr::filter(variable %in% c("tday", "tmax", "tmin")) %>% 
+  tidyr::spread(variable, value) %>%
+  ggplot(aes(x = time, y = tday, ymin = tmin, ymax = tmax)) + 
+  geom_ribbon(fill = "grey75") +
+  geom_line() + 
+  facet_wrap(~ location, ncol=1) + 
+  ylab("Temperature, daily (C)\n") +
+  xlab("\nDate") + theme_minimal()
+
 ## ----hourly-data--------------------------------------------------------------
 # Get the hourly observations for the first day of February 2019 in Hanko Tulliniemi
-tulliniemi_data <- fmi2::obs_weather_hourly(starttime = "2019-02-01",
-                                            endtime = "2019-02-02",
+tulliniemi_data_hour <- fmi2::obs_weather_hourly(starttime = "2019-06-21",
+                                            endtime = "2019-06-22",
                                             fmisid = 100946)
 
-## ----descrive-variables-2-----------------------------------------------------
-fmi2::describe_variables(tulliniemi_data$variable)
+## ----describe-variables-hour--------------------------------------------------
+fmi2::describe_variables(tulliniemi_data_hour$variable)
+
+## ----spread-data-hour---------------------------------------------------------
+tulliniemi_data_hour %>% 
+  tidyr::spread(variable, value) %>% 
+  # Let's convert the sf object into a regular tibble
+  sf::st_set_geometry(NULL) %>%
+  tibble::as_tibble()
+
+## -----------------------------------------------------------------------------
+tulliniemi_data_month <- fmi2::obs_weather_monthly(starttime = "2018-01-01",
+                                                   endtime = "2018-12-31",
+                                                   fmisid = 100946)
+
+
+## ----describe-variables-month-------------------------------------------------
+fmi2::describe_variables(tulliniemi_data_month$variable)
+
+## ----spread-data-month--------------------------------------------------------
+tulliniemi_data_month %>% 
+  tidyr::spread(variable, value) %>% 
+  # Let's convert the sf object into a regular tibble
+  sf::st_set_geometry(NULL) %>%
+  tibble::as_tibble()
 
 ## ----getting-sun-data---------------------------------------------------------
 # Use Kumpula station FMISID
 kumpula_sun_data <- obs_sunrad_minute(starttime = "2019-01-01",
-                                     endtime = "2019-01-02",
-                                     fmisid = 101004)
+                                      endtime = "2019-01-02",
+                                      fmisid = 101004)
+
+## ----getting-sun-data-place, eval=FALSE---------------------------------------
+#  # Use Kumpula station FMISID
+#  kumpula_sun_data <- obs_sunrad_minute(starttime = "2019-01-01",
+#                                        endtime = "2019-01-02",
+#                                        place = "Kumpula")
 
 ## ----sf-class-kumpula---------------------------------------------------------
 class(kumpula_sun_data)
 
 ## -----------------------------------------------------------------------------
 unique(kumpula_sun_data$variable)
+
+## ----describe-variables-sun---------------------------------------------------
+fmi2::describe_variables(kumpula_sun_data$variable)
+
+## -----------------------------------------------------------------------------
+wide_sun_data <- kumpula_sun_data %>% 
+  tidyr::spread(variable, value) %>% 
+  # Let's convert the sf object into a regular tibble
+  sf::st_set_geometry(NULL) %>%
+  tibble::as_tibble()
+
+wide_sun_data
+
+## -----------------------------------------------------------------------------
+ggplot(wide_sun_data, aes(time, ifelse(DIFF_1MIN > 2, DIFF_1MIN / (DIR_1MIN + DIFF_1MIN), NA))) +
+  geom_line()
+
+## -----------------------------------------------------------------------------
+ggplot(wide_sun_data, aes(time, GLOB_1MIN)) +
+  geom_line()
+
+## ----getting-soil-data, eval=FALSE--------------------------------------------
+#  # Use Kumpula station FMISID
+#  xx_soil_data <- obs_soil_hourly(starttime = "2019-06-01",
+#                                  endtime = "2019-06-05",
+#                                  fmisid = 101104)
+
+## -----------------------------------------------------------------------------
+api_obj <- fmi_api("DescribeStoredQueries")
+nodes <- api_obj$content
+unlist(purrr::map(nodes, xml2::xml_attrs)) -> stored.query.ids
+
+## -----------------------------------------------------------------------------
+stored.query.ids[grepl("::simple$", stored.query.ids)]
+
+## -----------------------------------------------------------------------------
+stored.query.ids[grepl("radiation", stored.query.ids) & 
+                   grepl("fmi", stored.query.ids) & 
+                   grepl("::simple$", stored.query.ids)]
+
+## -----------------------------------------------------------------------------
+list_parameters("fmi::observations::radiation::simple")
+
+## -----------------------------------------------------------------------------
+stored.query.ids[grepl("stuk::", stored.query.ids) & 
+                   grepl("::simple$", stored.query.ids)]
+
+## -----------------------------------------------------------------------------
+list_parameters("fmi::observations::soil::hourly::simple")
 

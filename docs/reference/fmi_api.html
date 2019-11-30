@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>fmi_api — fmi_api • fmi2</title>
+<title>FMI API — fmi_api • fmi2</title>
 
 
 <!-- jquery -->
@@ -35,10 +35,8 @@
 
 
 
-<meta property="og:title" content="fmi_api — fmi_api" />
-<meta property="og:description" content="Make a request to the FMI API. The base url is
-http://opendata.fmi.fi/wfs?service=WFS&amp;amp;version=2.0.0 to which other
-components defined by the arguments are appended." />
+<meta property="og:title" content="FMI API — fmi_api" />
+<meta property="og:description" content="Requests to FMI API." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -71,7 +69,7 @@ components defined by the arguments are appended." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">fmi2</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0.9001</span>
       </span>
     </div>
 
@@ -93,6 +91,9 @@ components defined by the arguments are appended." />
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/sunrad_weather_observation_data.html">fmi2: introductionPJA</a>
+    </li>
     <li>
       <a href="../articles/weather_observation_data.html">fmi2: introduction</a>
     </li>
@@ -117,15 +118,13 @@ components defined by the arguments are appended." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>fmi_api</h1>
+    <h1>FMI API</h1>
     
     <div class="hidden name"><code>fmi_api.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Make a request to the FMI API. The base url is
-http://opendata.fmi.fi/wfs?service=WFS&amp;version=2.0.0 to which other
-components defined by the arguments are appended.</p>
+    <p>Requests to FMI API.</p>
     </div>
 
     <pre class="usage"><span class='fu'>fmi_api</span>(<span class='no'>request</span>, <span class='kw'>storedquery_id</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
@@ -162,11 +161,14 @@ functions to check the validity of the parameters.</p></td>
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>This is a low-level function intended to be used by other higher level
+    <p>Make a request to the FMI API. The base url is
+opendata.fmi.fi/wfs?service=WFS&amp;version=2.0.0 to which other
+components defined by the arguments are appended.</p>
+<p>This is a low-level function intended to be used by other higher level
 functions in the package.</p>
 <p>Note that GET requests are used using <code>httpcache</code> meaning that requests
 are cached. If you want clear cache, use <code><a href='https://enpiar.com/r/httpcache/reference/cache-management.html'>httpcache::clearCache()</a></code>. To turn
-the cahce off completely, use <code><a href='https://enpiar.com/r/httpcache/reference/cache-management.html'>httpcache::cacheOff()</a></code></p>
+the cache off completely, use <code><a href='https://enpiar.com/r/httpcache/reference/cache-management.html'>httpcache::cacheOff()</a></code></p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>  <span class='co'># List stored queries</span>
@@ -175,7 +177,7 @@ the cahce off completely, use <code><a href='https://enpiar.com/r/httpcache/refe
 #&gt; 
 #&gt; $response
 #&gt; Response [http://opendata.fmi.fi/wfs?service=WFS&amp;version=2.0.0&amp;request=DescribeStoredQueries]
-#&gt;   Date: 2019-09-12 17:34
+#&gt;   Date: 2019-11-30 10:06
 #&gt;   Status: 200
 #&gt;   Content-Type: text/xml; charset=UTF-8
 #&gt;   Size: 358 kB
@@ -236,11 +238,11 @@ the cahce off completely, use <code><a href='https://enpiar.com/r/httpcache/refe
 
       <footer>
       <div class="copyright">
-  <p>Developed by Joona Lehtomaki.</p>
+  <p>Developed by Joona Lehtomaki, Leo Lahti.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
 
       </footer>

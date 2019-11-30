@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Hourly weather observations from weather stations. — obs_weather_hourly • fmi2</title>
+<title>Sun radiation observations — obs_sunrad_minute • fmi2</title>
 
 
 <!-- jquery -->
@@ -35,14 +35,8 @@
 
 
 
-<meta property="og:title" content="Hourly weather observations from weather stations. — obs_weather_hourly" />
-<meta property="og:description" content="Default set contains hourly air temperature average, maximum and minimum, air
-relative humidity average, wind speed average, minumum (10 minute average)
-and maximum (10 minute average), wind direction average, wind gust speed
-maximum (3 second average), rain accumulated, rain intensity maximum, air
-pressure average and the most significant weather code. By default, the data
-is returned from last 24 hours. At least one location parameter
-(geoid/place/fmisid/wmo/bbox) has to be given." />
+<meta property="og:title" content="Sun radiation observations — obs_sunrad_minute" />
+<meta property="og:description" content="Sun radiation observations from selected weather stations." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -75,7 +69,7 @@ is returned from last 24 hours. At least one location parameter
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">fmi2</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0.9001</span>
       </span>
     </div>
 
@@ -97,6 +91,9 @@ is returned from last 24 hours. At least one location parameter
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/sunrad_weather_observation_data.html">fmi2: introductionPJA</a>
+    </li>
     <li>
       <a href="../articles/weather_observation_data.html">fmi2: introduction</a>
     </li>
@@ -121,33 +118,29 @@ is returned from last 24 hours. At least one location parameter
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Hourly weather observations from weather stations.</h1>
+    <h1>Sun radiation observations</h1>
     
-    <div class="hidden name"><code>obs_weather_hourly.Rd</code></div>
+    <div class="hidden name"><code>obs_sunrad_minute.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Default set contains hourly air temperature average, maximum and minimum, air
-relative humidity average, wind speed average, minumum (10 minute average)
-and maximum (10 minute average), wind direction average, wind gust speed
-maximum (3 second average), rain accumulated, rain intensity maximum, air
-pressure average and the most significant weather code. By default, the data
-is returned from last 24 hours. At least one location parameter
-(geoid/place/fmisid/wmo/bbox) has to be given.</p>
+    <p>Sun radiation observations from selected weather stations.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>obs_weather_hourly</span>(<span class='no'>starttime</span>, <span class='no'>endtime</span>, <span class='kw'>fmisid</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>obs_sunrad_minute</span>(<span class='no'>starttime</span>, <span class='no'>endtime</span>, <span class='kw'>fmisid</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>place</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>starttime</th>
-      <td><p>character begin of the time interval in ISO-format.</p></td>
+      <td><p>character or Date start of the time interval in ISO-format.
+character will be coerced into a Date object.</p></td>
     </tr>
     <tr>
       <th>endtime</th>
-      <td><p>character end of time interval in ISO-format.
+      <td><p>character or Date end of the time interval in ISO-format.
+character will be coerced into a Date object.
 data.</p></td>
     </tr>
     <tr>
@@ -155,30 +148,44 @@ data.</p></td>
       <td><p>numeric FMI observation station identifier
 (see <a href='fmi_stations.html'>fmi_stations</a>.</p></td>
     </tr>
+    <tr>
+      <th>place</th>
+      <td><p>character location name for which to provide data.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Other named parameters.</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>sf object in a long (melted) form. Observation variables names are
 given in <code>variable</code> column. Following variables are returned:</p><dl class='dl-horizontal'>
-<dt>rrday</dt><dd><p>Precipitation amount</p></dd>
-<dt>snow</dt><dd><p>Snow depth</p></dd>
-<dt>tday</dt><dd><p>Average air temperature</p></dd>
-<dt>tmin</dt><dd><p>Minimum air temperature</p></dd>
-<dt>tmax</dt><dd><p>Maximum air temperature</p></dd>
-<dt>TG_PT12H_min</dt><dd><p>Ground minimum temperature</p></dd>
+<dt>DIFF_1MIN</dt><dd><p>Diffuse radiation</p></dd>
+<dt>DIR_1MIN</dt><dd><p>Direct radiation</p></dd>
+<dt>GLOB_1MIN</dt><dd><p>Global radiation</p></dd>
+<dt>REFL_1MIN</dt><dd><p>Reflected radiation</p></dd>
+<dt>LWIN_1MIN</dt><dd><p>Long wave solar radiation</p></dd>
+<dt>LWOUT_1MIN</dt><dd><p>Long wave outgoing solar radiation</p></dd>
+<dt>NET_1MIN</dt><dd><p>Radiation balance</p></dd>
+<dt>SUND_1MIN</dt><dd><p>Sunshine duration</p></dd>
+<dt>UVB_U</dt><dd><p>Ultraviolet irradiance</p></dd>
 
 </dl>
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>The FMI WFS stored query used by this function is
-<code>fmi::observations::weather::hourly::simple</code>. For more informations, see
-<a href='https://en.ilmatieteenlaitos.fi/open-data-manual-fmi-wfs-services'>the FMI documentation page</a>.</p>
+    <p>Default set contains
+At least one location parameter (geoid/place/fmisid/wmo/bbox)
+has to be given.</p>
+<p>The FMI WFS stored query used by this function is
+<code>fmi::observations::radiation::daily::simple</code>. For more informations, see the
+<a href='https://en.ilmatieteenlaitos.fi/open-data-manual-fmi-wfs-services'>FMI documentation page</a>.</p>
     <h2 class="hasAnchor" id="note"><a class="anchor" href="#note"></a>Note</h2>
 
     <p>For a complete description of the accepted arguments, see
-<code><a href='list_parameters.html'>list_parameters("fmi::observations::weather::hourly::simple")</a></code>.</p>
+<code><a href='list_parameters.html'>list_parameters("fmi::observations::radiation::daily::simple")</a></code>.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>https://en.ilmatieteenlaitos.fi/open-data-manual-fmi-wfs-services,</p>
@@ -201,11 +208,11 @@ given in <code>variable</code> column. Following variables are returned:</p><dl 
 
       <footer>
       <div class="copyright">
-  <p>Developed by Joona Lehtomaki.</p>
+  <p>Developed by Joona Lehtomaki, Leo Lahti.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
 
       </footer>

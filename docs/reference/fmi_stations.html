@@ -72,7 +72,7 @@ local copy provided as a csv file within the fmi package is used." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">fmi2</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0.9001</span>
       </span>
     </div>
 
@@ -94,6 +94,9 @@ local copy provided as a csv file within the fmi package is used." />
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/sunrad_weather_observation_data.html">fmi2: introductionPJA</a>
+    </li>
     <li>
       <a href="../articles/weather_observation_data.html">fmi2: introduction</a>
     </li>
@@ -130,18 +133,21 @@ is installed. If neither is, or if the download fails for any other reason, a
 local copy provided as a csv file within the <span class="pkg">fmi</span> package is used.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>fmi_stations</span>(<span class='kw'>groups</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>quiet</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>fmi_stations</span>(
+  <span class='kw'>url</span> <span class='kw'>=</span> <span class='st'>"http://en.ilmatieteenlaitos.fi/observation-stations"</span>,
+  <span class='kw'>quiet</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>groups</th>
-      <td><p>a character vector of observation station groups to subset for</p></td>
+      <th>url</th>
+      <td><p>character URL where to look for the weather stations table</p></td>
     </tr>
     <tr>
       <th>quiet</th>
-      <td><p>whether to suppress printing of diagnostic messages</p></td>
+      <td><p>logical whether to suppress printing of diagnostic messages</p></td>
     </tr>
     </table>
 
@@ -175,11 +181,11 @@ Ilari Scheinin</p>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Joona Lehtomaki.</p>
+  <p>Developed by Joona Lehtomaki, Leo Lahti.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
 
       </footer>
