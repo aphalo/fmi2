@@ -6,10 +6,14 @@
 stations are downloaded from the FMI website once per each session. Table is no 
 longer available when offline, but so are most of the data as well. 
 
-+ Man pages revised
-
++ Man pages revised and merged.
++ Refactoring of code from individual `obs` functions into `fmi_obs_simple()`.
 
 ### New features
+
++ `obs_sunrad_minute()`
++ `obs_weather_monthly()`
++ `obs_soil_hourly()` (No working example???!)
 
 ### Bug fixes
 
