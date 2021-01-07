@@ -1,13 +1,13 @@
 ---
-title: "fmi2: introduction"
-author: "Joona Lehtomäki"
+title: "fmi2: introductionPJA"
+author: "Joona Lehtomäki (revised by Pedro J. Aphalo)"
 date: "`r Sys.Date()`"
 output: 
   prettydoc::html_pretty:
     theme: leonids
     highlight: github
 vignette: >
-  %\VignetteIndexEntry{fmi2 introduction}
+  %\VignetteIndexEntry{fmi2 introductionPJA}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -33,7 +33,6 @@ remotes::install_github("ropensci/skimr")
 ```
 
 ```{r load-libraries, message=FALSE, warning=FALSE}
-library(DT)
 library(fmi2)
 library(ggplot2)
 library(leaflet)
@@ -45,8 +44,11 @@ library(skimr)
 
 You can retrieve weather state observation data with various temporal 
 resolutions using `fmi2`. First thing you need to know is of course which 
-location exactly you want to get the data for. The FMI API provides multiple 
-ways of defining the spatial query area:
+location exactly you want to get the data for.
+
+## Finding the station of interest
+
+The FMI API provides multiple ways of defining the spatial query area:
 
 + **Bounding box** given by coordindates and defining an area
 + **Place name** for which to provide data
@@ -61,14 +63,58 @@ online table is also available in `fmi2` using the function `fmi_stations()`:
 ```{r show-stations}
 station_data <- fmi2::fmi_stations() 
 
-station_data %>% 
-  DT::datatable()
-
+station_data
 ```
+
+Some examples of how to find the station of interest. First by partial name match and partial match to available data Group. We for a station in Helsinki with precipitation data.
+
+```{r find-by-partial-name-match}
+station_data %>% 
+  dplyr::filter(grepl("Helsinki", Name) & grepl("Precipitation", Groups))
+```
+
+Stations with WMO code assigned.
+
+```{r find-has-WMO}
+station_data %>% 
+  dplyr::filter(!is.na(WMO))
+```
+
+Find longest series.
+
+```{r find-longest}
+station_data %>% 
+  dplyr::arrange(Started) %>% 
+  dplyr::slice(1)
+```
+
+Arrange stations from North to South.
+
+```{r arrange-N2S}
+station_data %>% 
+  dplyr::arrange(-Lat)
+```
+
+The three stations at highest elevation.
+
+```{r find-by-elevation}
+station_data %>% 
+  dplyr::arrange(-Elevation) %>% 
+  dplyr::slice(1:3)
+```
+
+Select by range of latitude.
+
+```{r find-by-lat-range}
+station_data %>% 
+  dplyr::filter(dplyr::between(Lat, 60, 60.1))
+```
+
+## Displaying the location on a map
 
 We're going to pick "Hanko Tulliniemi" as an example here and use its FMISID
 (100946) to retrieve the data. As you can see from the table above, it also 
-provides the latlon (geographical) coordinates for the observation station.
+provides the Lat Lon (geographical) coordinates for the observation station.
 Before we get the actual data, let's visualize Hanko region.
 
 ```{r plot-hanko-map}
@@ -88,8 +134,8 @@ leaflet::leaflet(station_data) %>%
 
 # Getting daily weather observation data
 
-Now that we know how the address a specific observation station, we can proceed
-to getting the actual data. `fmi2` providers several functions to retrieving 
+Now that we know how the id for a specific observation station, we can proceed
+to getting the actual data. `fmi2` provides several functions for retrieving 
 data with different variables and temporal resolution. We'll start with 
 `obs_weather_daily()` which returns daily average observation data from a given 
 location. Let's get the daily weather observation data for the first 6 monhts
@@ -123,30 +169,29 @@ helper function `describe_variables()` that can be useful in finding out more
 about the variables:
 
 ```{r describe-variables}
-var_descriptions <- fmi2::describe_variables(tulliniemi_data$variable)
-var_descriptions %>% 
-  DT::datatable()
+fmi2::describe_variables(tulliniemi_data$variable)
 ```
 `obs_weather_daily()` returns data  in so called  long (or melted) format 
 meaning that all variable (i.e. parameter) names are  contained in column 
 `variable` and corresponding values in `value` column. You can transform the 
 data into a wide format using `tidyr`:
 
-```{r spread-data}
+```{r spread-data-daily}
 wide_data <- tulliniemi_data %>% 
   tidyr::spread(variable, value) %>% 
   # Let's convert the sf object into a regular tibble
-  sf::st_set_geometry(NULL)
+  sf::st_set_geometry(NULL) %>%
+  tibble::as_tibble()
 
-wide_data %>% 
-  DT::datatable()
+class(wide_data)
+wide_data
 ```
 
-Looks like there aren't too much data for `rrday`, `snow` or `TG_PT12H_min`. 
-Let's have a closer look at the data:
+Looks like there aren't many observations in the data for `rrday`, `snow` or `TG_PT12H_min`. 
+Let's have a closer look at the data stored in `wide_data`:
 
 ```{r skim-data, results='asis'}
-knitr::kable(skimr::skim(wide_data))
+skimr::skim(wide_data)
 ```
 
 Seems like the above mentioned variables indeed don't have data between the
@@ -174,37 +219,202 @@ all_data <- all_data %>%
                                   ordered = TRUE))
 ```
 
-Let's plot the daily temperature data in different locations:
+Let's plot the daily temperature data for the different locations as lines.
 
 ```{r plot-data}
 all_data %>% 
-  dplyr::filter(variable == "tday" | variable == "tmax" | variable == "tmin") %>% 
+  dplyr::filter(variable %in% c("tday", "tmax", "tmin")) %>% 
   ggplot(aes(x = time, y = value, color = variable)) + 
-  geom_line() + facet_wrap(~ location, ncol=1) + ylab("Temperature (C)\n") +
+  geom_line() + 
+  scale_color_manual(name = "",
+                     values = c(tmax = "red", tday = "black", tmin = "blue"),
+                     breaks = c("tmax", "tday", "tmin"),
+                     labels = c(tmax = expression(t[max]), 
+                                tday = expression(t[mean]), 
+                                tmin = expression(t[min]))) +
+  facet_wrap(~ location, ncol=1) + 
+  ylab("Temperature, daily (C)\n") +
   xlab("\nDate") + theme_minimal()
+```
 
+Let's plot the daily temperature data for the different locations as a line for
+mean and a band for the range.
+
+```{r plot-data-band}
+all_data %>% 
+  dplyr::filter(variable %in% c("tday", "tmax", "tmin")) %>% 
+  tidyr::spread(variable, value) %>%
+  ggplot(aes(x = time, y = tday, ymin = tmin, ymax = tmax)) + 
+  geom_ribbon(fill = "grey75") +
+  geom_line() + 
+  facet_wrap(~ location, ncol=1) + 
+  ylab("Temperature, daily (C)\n") +
+  xlab("\nDate") + theme_minimal()
 ```
 
 # Getting hourly weather observation data
 
-Instead of daily values, it is also possible to retrieve weather observation
+In addition to daily values, it is also possible to retrieve weather observation
 data with finer temporal resolution, such as hourly data, using the function
 `obs_weather_hourly()`. The data retrieved this has slightly different content
 as compared to the daily data:
 
 ```{r hourly-data}
-# Get the hourly observations for the first day of 2019 in Hanko Tulliniemi
-tulliniemi_data <- fmi2::obs_weather_hourly(starttime = "2019-02-01",
-                                            endtime = "2019-02-02",
+# Get the hourly observations for the first day of February 2019 in Hanko Tulliniemi
+tulliniemi_data_hour <- fmi2::obs_weather_hourly(starttime = "2019-06-21",
+                                            endtime = "2019-06-22",
                                             fmisid = 100946)
 ```
 
 Again, let's first have a look at what we actually got:
 
-```{r descrive-variables-2}
-var_descriptions <- fmi2::describe_variables(tulliniemi_data$variable)
-var_descriptions %>% 
-  DT::datatable()
+```{r describe-variables-hour}
+fmi2::describe_variables(tulliniemi_data_hour$variable)
+```
+
+```{r spread-data-hour}
+tulliniemi_data_hour %>% 
+  tidyr::spread(variable, value) %>% 
+  # Let's convert the sf object into a regular tibble
+  sf::st_set_geometry(NULL) %>%
+  tibble::as_tibble()
+```
+
+```{r}
+tulliniemi_data_month <- fmi2::obs_weather_monthly(starttime = "2018-01-01",
+                                                   endtime = "2018-12-31",
+                                                   fmisid = 100946)
+
+```
+
+```{r describe-variables-month}
+fmi2::describe_variables(tulliniemi_data_month$variable)
+```
+
+```{r spread-data-month}
+tulliniemi_data_month %>% 
+  tidyr::spread(variable, value) %>% 
+  # Let's convert the sf object into a regular tibble
+  sf::st_set_geometry(NULL) %>%
+  tibble::as_tibble()
+```
+
+# Getting minute sun radiation observation data
+
+Sun radiation data is available only for a few stattions: 
+
+Now that we know how the id for a specific observation station, we can proceed
+to getting the actual data. `fmi2` provides several functions for retrieving 
+data with different variables and temporal resolution. We'll start with 
+`obs_weather_daily()` which returns daily average observation data from a given 
+location. Let's get the daily weather observation data for the first 6 monhts
+of 2019:
+
+```{r getting-sun-data}
+# Use Kumpula station FMISID
+kumpula_sun_data <- obs_sunrad_minute(starttime = "2019-01-01",
+                                      endtime = "2019-01-02",
+                                      fmisid = 101004)
+```
+
+A place name as a character string is also accepted (not run here).
+
+```{r getting-sun-data-place, eval=FALSE}
+# Use Kumpula station FMISID
+kumpula_sun_data <- obs_sunrad_minute(starttime = "2019-01-01",
+                                      endtime = "2019-01-02",
+                                      place = "Kumpula")
+```
+
+In total, the function returned `r nrow(tulliniemi_data)` observations. You can also
+note the following:
+
+```{r sf-class-kumpula}
+class(kumpula_sun_data)
+```
+
+which means that the data returned by `obs_weather_daily()` is a spatial `sf`
+object with the `geometry` column storing the geographical information of the
+weather station. We'll come back to this later. Now we are interested in what 
+*kind* of data did we actually get? Let's find out:
+
+```{r}
+unique(kumpula_sun_data$variable)
+```
+
+```{r describe-variables-sun}
+fmi2::describe_variables(kumpula_sun_data$variable)
+```
+```{r}
+wide_sun_data <- kumpula_sun_data %>% 
+  tidyr::spread(variable, value) %>% 
+  # Let's convert the sf object into a regular tibble
+  sf::st_set_geometry(NULL) %>%
+  tibble::as_tibble()
+
+wide_sun_data
+```
+
+```{r}
+ggplot(wide_sun_data, aes(time, ifelse(DIFF_1MIN > 2, DIFF_1MIN / (DIR_1MIN + DIFF_1MIN), NA))) +
+  geom_line()
+```
+
+```{r}
+ggplot(wide_sun_data, aes(time, GLOB_1MIN)) +
+  geom_line()
+```
+
+## Soil temperatures
+
+Haven't found any station returning soil data!! (Not run)
+
+```{r getting-soil-data, eval=FALSE}
+# Use Kumpula station FMISID
+xx_soil_data <- obs_soil_hourly(starttime = "2019-06-01",
+                                endtime = "2019-06-05",
+                                fmisid = 101104)
+```
+
+# Advanced
+
+For finding stored queries available from the server we first need to download 
+the whole list of stored queries.
+
+```{r}
+api_obj <- fmi_api("DescribeStoredQueries")
+nodes <- api_obj$content
+unlist(purrr::map(nodes, xml2::xml_attrs)) -> stored.query.ids
+```
+
+Stored queries with ids ending in `::simple` return data in simple feature 
+(`sf`) format, and are likely to be supported `fmi_obs_simple()`. For queries
+returning data in other formats, there is not yet support in this package.
+
+```{r}
+stored.query.ids[grepl("::simple$", stored.query.ids)]
+```
+
+If we are not sure what is the exact id, we can search partial matches. For
+example `"radiation"` is used for sun radiation in the `"fmi"` queries but
+for other radiation in the `"stuk"` queries.
+
+```{r}
+stored.query.ids[grepl("radiation", stored.query.ids) & 
+                   grepl("fmi", stored.query.ids) & 
+                   grepl("::simple$", stored.query.ids)]
+```
+```{r}
+list_parameters("fmi::observations::radiation::simple")
+```
+
+```{r}
+stored.query.ids[grepl("stuk::", stored.query.ids) & 
+                   grepl("::simple$", stored.query.ids)]
 ```
 
 
+
+```{r}
+list_parameters("fmi::observations::soil::hourly::simple")
+```

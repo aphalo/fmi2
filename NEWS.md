@@ -7,6 +7,7 @@ stations are downloaded from the FMI website once per each session. Table is no
 longer available when offline, but so are most of the data as well. 
 
 + Man pages revised and merged.
++ Expand vignette.
 + Refactoring of code from individual `obs` functions into `fmi_obs_simple()`.
 
 ### New features
