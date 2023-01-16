@@ -31,12 +31,13 @@
 #' @return sf object in a long (melted) form. Observation variables names are
 #' given in `variable` column. Following variables are returned:
 #'   \describe{
-#'     \item{rrday}{Precipitation amount}
-#'     \item{snow}{Snow depth}
-#'     \item{tday}{Average air temperature}
-#'     \item{tmin}{Minimum air temperature}
-#'     \item{tmax}{Maximum air temperature}
-#'     \item{TG_PT12H_min}{Ground minimum temperature}
+#'     \item{time}{UTC}
+#'     \item{DIFF_1MIN}{diffuse radiation}
+#'     \item{DIR_1MIN}{direct radiation}
+#'     \item{GLOB_1MIN}{globa radiationl}
+#'     \item{LWIN_1MIN}{long-wave in (down welling)}
+#'     \item{LWOUT_1MIN}{long-wave out (up welling)}
+#'     \item{NET_1MIN}{net radiation}
 #'   }
 #'
 #' @export
