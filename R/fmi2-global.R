@@ -12,8 +12,10 @@ fmi2_global$base_url <- "http://opendata.fmi.fi/wfs?service=WFS&version=2.0.0"
 fmi2_global$function_map <- tibble::tibble(
   `Stored query` = c("fmi::ef::stations",
                      "fmi::observations::weather::daily::simple",
-                     "fmi::observations::weather::hourly::simple"),
+                     "fmi::observations::weather::hourly::simple",
+                     "fmi::observations::radiation::simple"),
   `fmi2 function` = c("fmi_stations",
                       "obs_weather_daily",
-                      "obs_weather_hourly")
+                      "obs_weather_hourly",
+                      "obs_radiation_minute")
 )

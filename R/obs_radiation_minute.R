@@ -45,7 +45,7 @@
 #' @seealso https://en.ilmatieteenlaitos.fi/open-data-manual-fmi-wfs-services,
 #' @seealso \link[fmi2]{list_parameters}
 #'
-obs_sun_minute <- function(starttime, endtime, fmisid = NULL) {
+obs_radiation_minute <- function(starttime, endtime, fmisid = NULL) {
   fmi_obj <- fmi_api(request = "getFeature",
                      storedquery_id = "fmi::observations::radiation::simple",
                      starttime = starttime, endtime = endtime, fmisid = fmisid)
