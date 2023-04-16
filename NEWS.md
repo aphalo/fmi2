@@ -1,5 +1,12 @@
 # fmi2 (development version)
 
+## CHANGES IN VERSION 0.2.0.9000 (2023-01-17)
+**This is a fork at (https://github.com/aphalo/fmi2) **
+*Forked from (https://github.com/rOpenGov/fmi2)*
+
+-   Add support for radiation query
+-   Add vignette with examples for Kumpula
+
 ## CHANGES IN VERSION 0.2.0 (2020-11-29)
 
 -   Use the FMI API to retrieve the FMI stations data. Previously this 

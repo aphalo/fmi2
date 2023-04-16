@@ -1,0 +1,6 @@
+destination: ../fmi2-fork-docs
+url: https://docs.r4photobiology.info/fmi2-fork/
+
+template:
+  bootstrap: 5
+
